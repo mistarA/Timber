@@ -34,8 +34,10 @@ import com.naman14.timber.ITimberService;
 import com.naman14.timber.R;
 import com.naman14.timber.dataloaders.SongLoader;
 import com.naman14.timber.helpers.MusicPlaybackTrack;
+import com.naman14.timber.helpers.Song;
 import com.naman14.timber.utils.TimberUtils.IdType;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.WeakHashMap;
@@ -703,9 +705,9 @@ public class MusicPlayer {
         return context.getResources().getQuantityString(pluralInt, number, number);
     }
 
-    public static void addToPlaylist(final Context context, final long[] ids, final long playlistid) {
-        final int size = ids.length;
-        final ContentResolver resolver = context.getContentResolver();
+    public static void addToPlaylist(final Context context, ArrayList<Song> songs, final long playlistid) {
+        final int size = songs.size();
+     /*   final ContentResolver resolver = context.getContentResolver();
         final String[] projection = new String[]{
                 "max(" + "play_order" + ")",
         };
@@ -728,20 +730,22 @@ public class MusicPlayer {
 
         int numinserted = 0;
         for (int offSet = 0; offSet < size; offSet += 1000) {
-            makeInsertItems(ids, offSet, 1000, base);
+            makeInsertItems(songs, offSet, 1000, base);
             numinserted += resolver.bulkInsert(uri, mContentValuesCache);
         }
         final String message = context.getResources().getQuantityString(
-                R.plurals.NNNtrackstoplaylist, numinserted, numinserted);
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                R.plurals.NNNtrackstoplaylist, numinserted, numinserted);*/
+
+        //Here we are going to update the selected playlist to the backend
+        Toast.makeText(context, songs.get(0).title + " added to playlist " + playlistid, Toast.LENGTH_SHORT).show();
     }
 
-    public static void makeInsertItems(final long[] ids, final int offset, int len, final int base) {
-        if (offset + len > ids.length) {
-            len = ids.length - offset;
+    public static void makeInsertItems(ArrayList<Song> songs, final int offset, int len, final int base) {
+        if (offset + len > songs.size()) {
+            len = songs.size() - offset;
         }
 
-        if (mContentValuesCache == null || mContentValuesCache.length != len) {
+      /*  if (mContentValuesCache == null || mContentValuesCache.length != len) {
             mContentValuesCache = new ContentValues[len];
         }
         for (int i = 0; i < len; i++) {
@@ -750,7 +754,7 @@ public class MusicPlayer {
             }
             mContentValuesCache[i].put(MediaStore.Audio.Playlists.Members.PLAY_ORDER, base + offset + i);
             mContentValuesCache[i].put(MediaStore.Audio.Playlists.Members.AUDIO_ID, ids[offset + i]);
-        }
+        }*/
     }
 
     public static final long createPlaylist(final Context context, final String name) {

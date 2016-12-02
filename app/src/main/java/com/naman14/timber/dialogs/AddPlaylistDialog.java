@@ -12,6 +12,7 @@ import com.naman14.timber.dataloaders.PlaylistLoader;
 import com.naman14.timber.models.Playlist;
 import com.naman14.timber.helpers.Song;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,15 +21,15 @@ import java.util.List;
 public class AddPlaylistDialog extends DialogFragment {
 
     public static AddPlaylistDialog newInstance(Song song) {
-        long[] songs = new long[1];
-        songs[0] = song.id;
+        ArrayList<Song> songs = new ArrayList<>();
+        songs.add(song);
         return newInstance(songs);
     }
 
-    public static AddPlaylistDialog newInstance(long[] songList) {
+    public static AddPlaylistDialog newInstance(ArrayList<Song> songList) {
         AddPlaylistDialog dialog = new AddPlaylistDialog();
         Bundle bundle = new Bundle();
-        bundle.putLongArray("songs", songList);
+        bundle.putParcelableArrayList("songs", songList);
         dialog.setArguments(bundle);
         return dialog;
     }
@@ -47,7 +48,7 @@ public class AddPlaylistDialog extends DialogFragment {
         return new MaterialDialog.Builder(getActivity()).title("Add to playlist").items(chars).itemsCallback(new MaterialDialog.ListCallback() {
             @Override
             public void onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
-                long[] songs = getArguments().getLongArray("songs");
+                ArrayList<Song> songs = getArguments().getParcelableArrayList("songs");
                 if (which == 0) {
                     CreatePlaylistDialog.newInstance(songs).show(getActivity().getSupportFragmentManager(), "CREATE_PLAYLIST");
                     return;

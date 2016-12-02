@@ -11,6 +11,8 @@ import com.naman14.timber.musicplayer.MusicPlayer;
 import com.naman14.timber.fragments.PlaylistFragment;
 import com.naman14.timber.helpers.Song;
 
+import java.util.ArrayList;
+
 /**
  * Created by naman on 20/12/15.
  */
@@ -21,20 +23,20 @@ public class CreatePlaylistDialog extends DialogFragment {
     }
 
     public static CreatePlaylistDialog newInstance(Song song) {
-        long[] songs;
+        ArrayList<Song> songs;
         if (song == null) {
-            songs = new long[0];
+            songs = new ArrayList<>();
         } else {
-            songs = new long[1];
-            songs[0] = song.id;
+            songs = new ArrayList<>();
+            songs.add(song);
         }
         return newInstance(songs);
     }
 
-    public static CreatePlaylistDialog newInstance(long[] songList) {
+    public static CreatePlaylistDialog newInstance(ArrayList<Song> songList) {
         CreatePlaylistDialog dialog = new CreatePlaylistDialog();
         Bundle bundle = new Bundle();
-        bundle.putLongArray("songs", songList);
+        bundle.putParcelableArrayList("songs", songList);
         dialog.setArguments(bundle);
         return dialog;
     }
@@ -46,11 +48,11 @@ public class CreatePlaylistDialog extends DialogFragment {
             @Override
             public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
 
-                long[] songs = getArguments().getLongArray("songs");
+                ArrayList<Song> songs = getArguments().getParcelableArrayList("songs");
                 long playistId = MusicPlayer.createPlaylist(getActivity(), input.toString());
 
                 if (playistId != -1) {
-                    if (songs != null && songs.length != 0)
+                    if (songs != null && songs.size() != 0)
                         MusicPlayer.addToPlaylist(getActivity(), songs, playistId);
                     else
                         Toast.makeText(getActivity(), "Created playlist", Toast.LENGTH_SHORT).show();

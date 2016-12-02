@@ -18,17 +18,23 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import com.naman14.timber.dialogs.AddPlaylistDialog;
+import com.naman14.timber.helpers.Song;
 import com.naman14.timber.musicplayer.MusicPlayer;
 import com.naman14.timber.R;
 import com.naman14.timber.helpers.MusicPlaybackTrack;
 import com.naman14.timber.utils.Helpers;
+import com.naman14.timber.utils.NavigationUtils;
+import com.naman14.timber.utils.TimberUtils;
 import com.naman14.timber.widgets.BubbleTextGetter;
 import com.naman14.timber.widgets.MusicVisualizer;
 
@@ -37,7 +43,7 @@ import java.util.List;
 public class SongsListAdapter extends RecyclerView.Adapter<SongsListAdapter.ItemHolder> implements BubbleTextGetter {
 
     public int currentlyPlayingPosition;
-    private List<MusicPlaybackTrack> arraylist;
+    private List<Song> arraylist;
     private AppCompatActivity mContext;
     private long[] songIDs;
     private boolean isPlaylist;
@@ -45,9 +51,9 @@ public class SongsListAdapter extends RecyclerView.Adapter<SongsListAdapter.Item
     private int lastPosition = -1;
     private String ateKey;
     private long playlistId;
-    private List<MusicPlaybackTrack> songs;
+    private List<Song> songs;
 
-    public SongsListAdapter(AppCompatActivity context, List<MusicPlaybackTrack> arraylist, boolean isPlaylistSong, boolean animate) {
+    public SongsListAdapter(AppCompatActivity context, List<Song> arraylist, boolean isPlaylistSong, boolean animate) {
         this.arraylist = arraylist;
         this.mContext = context;
         this.isPlaylist = isPlaylistSong;
@@ -72,7 +78,7 @@ public class SongsListAdapter extends RecyclerView.Adapter<SongsListAdapter.Item
 
     @Override
     public void onBindViewHolder(ItemHolder itemHolder, int i) {
-        MusicPlaybackTrack localItem = arraylist.get(i);
+        Song localItem = arraylist.get(i);
 
         itemHolder.title.setText(localItem.title);
 //        itemHolder.artist.setText(localItem.artistName);
@@ -103,7 +109,7 @@ public class SongsListAdapter extends RecyclerView.Adapter<SongsListAdapter.Item
 //        }
 //
 //
-//        setOnPopupMenuListener(itemHolder, i);
+        setOnPopupMenuListener(itemHolder, i);
 
     }
 
@@ -116,65 +122,65 @@ public class SongsListAdapter extends RecyclerView.Adapter<SongsListAdapter.Item
         return (null != arraylist ? arraylist.size() : 0);
     }
 
-//    private void setOnPopupMenuListener(ItemHolder itemHolder, final int position) {
-//
-//        itemHolder.popupMenu.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//                final PopupMenu menu = new PopupMenu(mContext, v);
-//
-//                menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-//                    @Override
-//                    public boolean onMenuItemClick(MenuItem item) {
-//                        switch (item.getItemId()) {
-//                            case R.id.popup_song_remove_playlist:
-//                                TimberUtils.removeFromPlaylist(mContext, arraylist.get(position).id, playlistId);
-//                                removeSongAt(position);
-//                                notifyItemRemoved(position);
-//                                break;
-//                            case R.id.popup_song_play:
-//                                MusicPlayer.playAll(mContext, songIDs, position, -1, TimberUtils.IdType.NA, false);
-//                                break;
-//                            case R.id.popup_song_play_next:
-//                                long[] ids = new long[1];
-//                                ids[0] = arraylist.get(position).id;
-//                                MusicPlayer.playNext(mContext, ids, -1, TimberUtils.IdType.NA);
-//                                break;
-//                            case R.id.popup_song_goto_album:
-//                                NavigationUtils.goToAlbum(mContext, arraylist.get(position).albumId);
-//                                break;
-//                            case R.id.popup_song_goto_artist:
-//                                NavigationUtils.goToArtist(mContext, arraylist.get(position).artistId);
-//                                break;
-//                            case R.id.popup_song_addto_queue:
-//                                long[] id = new long[1];
-//                                id[0] = arraylist.get(position).id;
-//                                MusicPlayer.addToQueue(mContext, id, -1, TimberUtils.IdType.NA);
-//                                break;
-//                            case R.id.popup_song_addto_playlist:
-//                                AddPlaylistDialog.newInstance(arraylist.get(position)).show(mContext.getSupportFragmentManager(), "ADD_PLAYLIST");
-//                                break;
-//                            case R.id.popup_song_delete:
-//                                long[] deleteIds = {arraylist.get(position).id};
-//                                TimberUtils.showDeleteDialog(mContext,arraylist.get(position).title, deleteIds, SongsListAdapter.this, position);
-//                                break;
-//                        }
-//                        return false;
-//                    }
-//                });
-//                menu.inflate(R.menu.popup_song);
-//                menu.show();
-//                if (isPlaylist)
-//                    menu.getMenu().findItem(R.id.popup_song_remove_playlist).setVisible(true);
-//            }
-//        });
-//    }
+    private void setOnPopupMenuListener(ItemHolder itemHolder, final int position) {
+
+        itemHolder.popupMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                final PopupMenu menu = new PopupMenu(mContext, v);
+
+                menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.popup_song_remove_playlist:
+                                TimberUtils.removeFromPlaylist(mContext, arraylist.get(position).id, playlistId);
+                                removeSongAt(position);
+                                notifyItemRemoved(position);
+                                break;
+                            case R.id.popup_song_play:
+                                MusicPlayer.playAll(mContext, songIDs, position, -1, TimberUtils.IdType.NA, false);
+                                break;
+                            case R.id.popup_song_play_next:
+                                long[] ids = new long[1];
+                                ids[0] = arraylist.get(position).id;
+                                MusicPlayer.playNext(mContext, ids, -1, TimberUtils.IdType.NA);
+                                break;
+                            case R.id.popup_song_goto_album:
+                                NavigationUtils.goToAlbum(mContext, arraylist.get(position).albumId);
+                                break;
+                            case R.id.popup_song_goto_artist:
+                                NavigationUtils.goToArtist(mContext, arraylist.get(position).artistId);
+                                break;
+                            case R.id.popup_song_addto_queue:
+                                long[] id = new long[1];
+                                id[0] = arraylist.get(position).id;
+                                MusicPlayer.addToQueue(mContext, id, -1, TimberUtils.IdType.NA);
+                                break;
+                            case R.id.popup_song_addto_playlist:
+                                AddPlaylistDialog.newInstance(arraylist.get(position)).show(mContext.getSupportFragmentManager(), "ADD_PLAYLIST");
+                                break;
+                            case R.id.popup_song_delete:
+                                long[] deleteIds = {arraylist.get(position).id};
+                                TimberUtils.showDeleteDialog(mContext,arraylist.get(position).title, deleteIds, SongsListAdapter.this, position);
+                                break;
+                        }
+                        return false;
+                    }
+                });
+                menu.inflate(R.menu.popup_song);
+                menu.show();
+                if (isPlaylist)
+                    menu.getMenu().findItem(R.id.popup_song_remove_playlist).setVisible(true);
+            }
+        });
+    }
 
     public long[] getSongIds() {
         long[] ret = new long[getItemCount()];
         for (int i = 0; i < getItemCount(); i++) {
-            ret[i] = arraylist.get(i).mId;
+            ret[i] = arraylist.get(i).id;
         }
 
         return ret;
@@ -210,7 +216,7 @@ public class SongsListAdapter extends RecyclerView.Adapter<SongsListAdapter.Item
         }
     }
 
-    public void updateDataSet(List<MusicPlaybackTrack> arraylist) {
+    public void updateDataSet(List<Song> arraylist) {
         this.arraylist = arraylist;
         this.songIDs = getSongIds();
     }
@@ -237,7 +243,6 @@ public class SongsListAdapter extends RecyclerView.Adapter<SongsListAdapter.Item
                 @Override
                 public void run() {
 //                    MusicPlayer.playAll(mContext, songIDs, getAdapterPosition(), -1, TimberUtils.IdType.NA, false);
-                    MusicPlayer.setPlayList(mContext, songs, getAdapterPosition());
                     MusicPlayer.openFile(songs.get(getAdapterPosition()).url);
                     MusicPlayer.playOrPause();
                     Handler handler1 = new Handler();
@@ -256,11 +261,11 @@ public class SongsListAdapter extends RecyclerView.Adapter<SongsListAdapter.Item
 
     }
 
-    public MusicPlaybackTrack getSongAt(int i) {
+    public Song getSongAt(int i) {
         return arraylist.get(i);
     }
 
-    public void addSongTo(int i, MusicPlaybackTrack song) {
+    public void addSongTo(int i, Song song) {
         arraylist.add(i, song);
     }
 

@@ -20,7 +20,7 @@ import android.os.Parcelable;
 
 public class Song implements Parcelable{
 
-    public final long albumId;
+    public  long albumId;
     public  String albumName;
     public  long artistId;
     public  String artistName;
@@ -69,6 +69,11 @@ public class Song implements Parcelable{
         title = in.readString();
         trackNumber = in.readInt();
         url = in.readString();
+    }
+
+    public Song(String title, String url) {
+        this.url = url;
+        this.title = title;
     }
 
     public static final Creator<Song> CREATOR = new Creator<Song>() {
