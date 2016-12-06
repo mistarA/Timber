@@ -20,7 +20,6 @@ import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -35,16 +34,13 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.afollestad.appthemeengine.ATE;
-import com.afollestad.appthemeengine.Config;
-import com.naman14.timber.musicplayer.MusicPlayer;
 import com.naman14.timber.R;
 import com.naman14.timber.activities.BaseActivity;
 import com.naman14.timber.adapters.BaseQueueAdapter;
 import com.naman14.timber.dataloaders.QueueLoader;
 import com.naman14.timber.listeners.MusicStateListener;
+import com.naman14.timber.musicplayer.MusicPlayer;
 import com.naman14.timber.timely.TimelyView;
-import com.naman14.timber.utils.Helpers;
 import com.naman14.timber.utils.PreferencesUtility;
 import com.naman14.timber.utils.SlideTrackSwitcher;
 import com.naman14.timber.utils.TimberUtils;
@@ -52,10 +48,6 @@ import com.naman14.timber.widgets.CircularSeekBar;
 import com.naman14.timber.widgets.DividerItemDecoration;
 import com.naman14.timber.widgets.PlayPauseButton;
 import com.naman14.timber.widgets.PlayPauseDrawable;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 import net.steamcrafted.materialiconlib.MaterialIconView;
@@ -205,8 +197,6 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ateKey = Helpers.getATEKey(getActivity());
-        accentColor = Config.accentColor(getActivity(), ateKey);
     }
 
     public void setSongDetails(View view) {
@@ -298,11 +288,6 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("dark_theme", false)) {
-            ATE.apply(this, "dark_theme");
-        } else {
-            ATE.apply(this, "light_theme");
-        }
     }
 
     private void setSongDetails() {
@@ -363,11 +348,6 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
                     .setIcon(MaterialDrawableBuilder.IconValue.SHUFFLE)
                     .setSizeDp(30);
 
-            if (getActivity() != null) {
-                if (MusicPlayer.getShuffleMode() == 0) {
-                    builder.setColor(Config.textColorPrimary(getActivity(), ateKey));
-                } else builder.setColor(Config.accentColor(getActivity(), ateKey));
-            }
 
             shuffle.setImageDrawable(builder.build());
             shuffle.setOnClickListener(new View.OnClickListener() {
@@ -387,11 +367,6 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
                     .setIcon(MaterialDrawableBuilder.IconValue.REPEAT)
                     .setSizeDp(30);
 
-            if (getActivity() != null) {
-                if (MusicPlayer.getRepeatMode() == 0) {
-                    builder.setColor(Config.textColorPrimary(getActivity(), ateKey));
-                } else builder.setColor(Config.accentColor(getActivity(), ateKey));
-            }
 
             repeat.setImageDrawable(builder.build());
             repeat.setOnClickListener(new View.OnClickListener() {
@@ -447,27 +422,6 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
 
     public void updateSongDetails() {
         //do not reload image if it was a play/pause change
-        if (!duetoplaypause) {
-            if (albumart != null) {
-                ImageLoader.getInstance().displayImage(TimberUtils.getAlbumArtUri(MusicPlayer.getCurrentAlbumId()).toString(), albumart,
-                        new DisplayImageOptions.Builder().cacheInMemory(true)
-                                .showImageOnFail(R.drawable.ic_empty_music2)
-                                .build(), new SimpleImageLoadingListener() {
-
-                            @Override
-                            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                                doAlbumArtStuff(loadedImage);
-                            }
-
-                            @Override
-                            public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-                                Bitmap failedBitmap = ImageLoader.getInstance().loadImageSync("drawable://" + R.drawable.ic_empty_music2);
-                                doAlbumArtStuff(failedBitmap);
-                            }
-
-                        });
-            }
-        }
         duetoplaypause = false;
 
         if (mPlayPause != null)

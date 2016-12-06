@@ -31,22 +31,15 @@ import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.afollestad.appthemeengine.Config;
-import com.naman14.timber.musicplayer.MusicPlayer;
 import com.naman14.timber.R;
 import com.naman14.timber.activities.BaseActivity;
 import com.naman14.timber.listeners.MusicStateListener;
-import com.naman14.timber.utils.Helpers;
+import com.naman14.timber.musicplayer.MusicPlayer;
 import com.naman14.timber.utils.ImageUtils;
 import com.naman14.timber.utils.NavigationUtils;
 import com.naman14.timber.utils.PreferencesUtility;
 import com.naman14.timber.utils.SlideTrackSwitcher;
-import com.naman14.timber.utils.TimberUtils;
 import com.naman14.timber.widgets.PlayPauseButton;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import net.steamcrafted.materialiconlib.MaterialIconView;
 
@@ -151,7 +144,6 @@ public class QuickControlsFragment extends Fragment implements MusicStateListene
         layoutParams.setMargins(0, -(mProgress.getMeasuredHeight() / 2), 0, 0);
         mProgress.setLayoutParams(layoutParams);
 
-        mPlayPause.setColor(Config.accentColor(getActivity(), Helpers.getATEKey(getActivity())));
         mPlayPauseExpanded.setColor(Color.WHITE);
 
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -215,47 +207,6 @@ public class QuickControlsFragment extends Fragment implements MusicStateListene
         return rootView;
     }
 
-    public void updateNowplayingCard() {
-        mTitle.setText(MusicPlayer.getTrackName());
-        mArtist.setText(MusicPlayer.getArtistName());
-        mTitleExpanded.setText(MusicPlayer.getTrackName());
-        mArtistExpanded.setText(MusicPlayer.getArtistName());
-        if (!duetoplaypause) {
-            ImageLoader.getInstance().displayImage(TimberUtils.getAlbumArtUri(MusicPlayer.getCurrentAlbumId()).toString(), mAlbumArt,
-                    new DisplayImageOptions.Builder().cacheInMemory(true)
-                            .showImageOnFail(R.drawable.ic_empty_music2)
-                            .resetViewBeforeLoading(true)
-                            .build(), new ImageLoadingListener() {
-                        @Override
-                        public void onLoadingStarted(String imageUri, View view) {
-
-                        }
-
-                        @Override
-                        public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-                            Bitmap failedBitmap = ImageLoader.getInstance().loadImageSync("drawable://" + R.drawable.ic_empty_music2);
-                            if (getActivity() != null)
-                                new setBlurredAlbumArt().execute(failedBitmap);
-                        }
-
-                        @Override
-                        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                            if (getActivity() != null)
-                                new setBlurredAlbumArt().execute(loadedImage);
-
-                        }
-
-                        @Override
-                        public void onLoadingCancelled(String imageUri, View view) {
-
-                        }
-                    });
-        }
-        duetoplaypause = false;
-        mProgress.setMax((int) MusicPlayer.duration());
-        mSeekBar.setMax((int) MusicPlayer.duration());
-        mProgress.postDelayed(mUpdateProgress, 10);
-    }
 
     @Override
     public void onStart() {
@@ -307,7 +258,6 @@ public class QuickControlsFragment extends Fragment implements MusicStateListene
     }
 
     public void onMetaChanged() {
-        updateNowplayingCard();
         updateState();
     }
 

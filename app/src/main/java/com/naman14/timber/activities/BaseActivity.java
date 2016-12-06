@@ -26,15 +26,12 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
-import com.afollestad.appthemeengine.ATE;
-import com.afollestad.appthemeengine.ATEActivity;
 import com.naman14.timber.ITimberService;
 import com.naman14.timber.R;
 import com.naman14.timber.listeners.MusicStateListener;
@@ -42,7 +39,6 @@ import com.naman14.timber.musicplayer.MusicPlayer;
 import com.naman14.timber.musicplayer.MusicService;
 import com.naman14.timber.slidinguppanel.SlidingUpPanelLayout;
 import com.naman14.timber.subfragments.QuickControlsFragment;
-import com.naman14.timber.utils.Helpers;
 import com.naman14.timber.utils.NavigationUtils;
 import com.naman14.timber.utils.TimberUtils;
 
@@ -51,7 +47,7 @@ import java.util.ArrayList;
 
 import static com.naman14.timber.musicplayer.MusicPlayer.mService;
 
-public class BaseActivity extends ATEActivity implements ServiceConnection, MusicStateListener {
+public class BaseActivity extends AppCompatActivity implements ServiceConnection, MusicStateListener {
 
     private final ArrayList<MusicStateListener> mMusicStateListener = new ArrayList<>();
     private MusicPlayer.ServiceToken mToken;
@@ -182,7 +178,6 @@ public class BaseActivity extends ATEActivity implements ServiceConnection, Musi
         if (!TimberUtils.hasEffectsPanel(BaseActivity.this)) {
             menu.removeItem(R.id.action_equalizer);
         }
-        ATE.applyMenu(this, getATEKey(), menu);
         return true;
     }
 
@@ -214,11 +209,6 @@ public class BaseActivity extends ATEActivity implements ServiceConnection, Musi
         return super.onOptionsItemSelected(item);
     }
 
-    @Nullable
-    @Override
-    public String getATEKey() {
-        return Helpers.getATEKey(this);
-    }
 
     public void setPanelSlideListeners(SlidingUpPanelLayout panelLayout) {
         panelLayout.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
@@ -276,9 +266,6 @@ public class BaseActivity extends ATEActivity implements ServiceConnection, Musi
                 } else if (action.equals(MusicService.PLAYLIST_CHANGED)) {
                     baseActivity.onPlaylistChanged();
                 } else if (action.equals(MusicService.TRACK_ERROR)) {
-                    final String errorMsg = context.getString(R.string.error_playing_track,
-                            intent.getStringExtra(MusicService.TrackErrorExtra.TRACK_NAME));
-                    Toast.makeText(baseActivity, errorMsg, Toast.LENGTH_SHORT).show();
                 }
             }
         }
