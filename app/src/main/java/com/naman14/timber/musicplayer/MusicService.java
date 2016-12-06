@@ -76,6 +76,7 @@ public class MusicService extends Service {
     public static final String SHUFFLEMODE_CHANGED = "com.naman14.timber.shufflemodechanged";
     public static final String TRACK_ERROR = "com.naman14.timber.trackerror";
     public static final String PLAYER_PREPARED = "com.naman14.timber.playerprepared";
+    public static final String BUFFERING_STATUS_CHANGED = "com.naman14.timber.bufferingstatuschanged";
     public static final String TIMBER_PACKAGE_NAME = "com.naman14.timber";
     public static final String MUSIC_PACKAGE_NAME = "com.android.music";
     public static final String SERVICECMD = "com.naman14.timber.musicservicecommand";
@@ -118,7 +119,8 @@ public class MusicService extends Service {
     static final int FOCUSCHANGE = 5;
     static final int FADEDOWN = 6;
     static final int FADEUP = 7;
-    static final int BUFFERED = 8;
+    static final int PREPARED = 8;
+    static final int BUFFERING_STATUS = 9;
 
     static final int IDLE_DELAY = 5 * 60 * 1000;
     static final long REWIND_INSTEAD_PREVIOUS_THRESHOLD = 15000;
@@ -1047,6 +1049,8 @@ public class MusicService extends Service {
         return false;
     }
 
+    public static final String INTENT_EXTRA_BUFFERED_PERCENTAGE = "buffered_percentage";
+
     void notifyChange(final String what) {
         if (D) {
             Log.d(TAG, "notifyChange: what = " + what);
@@ -1067,6 +1071,7 @@ public class MusicService extends Service {
         intent.putExtra("album", getAlbumName());
         intent.putExtra("track", getTrackName());
         intent.putExtra("playing", isPlaying());
+        intent.putExtra(INTENT_EXTRA_BUFFERED_PERCENTAGE, mBufferedPercentage);
 
         sendStickyBroadcast(intent);
 
@@ -1392,6 +1397,7 @@ public class MusicService extends Service {
             if (TextUtils.isEmpty(trackName)) {
                 trackName = path;
             }
+            Log.d(TAG, "sendErrorMessage from openFile");
             sendErrorMessage(trackName);
 
             stop(true);
@@ -2142,6 +2148,19 @@ public class MusicService extends Service {
     public void setLockscreenAlbumArt(boolean enabled) {
         mShowAlbumArtOnLockscreen = enabled;
         notifyChange(META_CHANGED);
+    }
+
+    private int mBufferedPercentage = -1;
+    public int getBufferedPercentage() {
+        return mBufferedPercentage;
+    }
+    public void updateBufferingStatus(int percentage) {
+        mBufferedPercentage = percentage;
+    }
+
+    public interface TrackErrorExtra {
+
+        String TRACK_NAME = "trackname";
     }
 
 }

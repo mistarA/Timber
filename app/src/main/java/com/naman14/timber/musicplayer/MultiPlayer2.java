@@ -18,6 +18,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 
+import static com.naman14.timber.musicplayer.MusicService.BUFFERING_STATUS;
 import static com.naman14.timber.musicplayer.MusicService.RELEASE_WAKELOCK;
 import static com.naman14.timber.musicplayer.MusicService.SERVER_DIED;
 
@@ -47,12 +48,16 @@ public final class MultiPlayer2 implements MediaPlayer.OnErrorListener {
     private void setCurrentMediaPlayer(MediaPlayer player) {
         mCurrentMediaPlayer = player;
         Log.d(TAG, "setCurrentMediaPlayer: " + player.toString() + "---" + mCurrentMediaPlayer.toString());
+        mService.get().updateBufferingStatus(-1);
         mCurrentMediaPlayer.setOnPreparedListener(new CurrentPlayerPreparedListner());
+        mCurrentMediaPlayer.setOnBufferingUpdateListener(new CurrentPlayerBufferingUpdateListener());
         mCurrentMediaPlayer.setOnCompletionListener(new CurrentPlayerCompleteListner());
         if (isCurrentPlayerMediaPlayer1()) {
             mMediaPlayer2.setOnPreparedListener(standbyPreparedListner = new StandbyPreparedListner());
+            mMediaPlayer2.setOnBufferingUpdateListener(new StandByPlayerBufferingUpdateListener());
         } else {
             mMediaPlayer1.setOnPreparedListener(standbyPreparedListner = new StandbyPreparedListner());
+            mMediaPlayer2.setOnBufferingUpdateListener(new StandByPlayerBufferingUpdateListener());
         }
         mCurrentMediaPlayer.setOnErrorListener(this);
         mCurrentMediaPlayer.setWakeMode(mService.get(), PowerManager.PARTIAL_WAKE_LOCK);
@@ -76,6 +81,10 @@ public final class MultiPlayer2 implements MediaPlayer.OnErrorListener {
     private boolean setDataSourceImpl(final MediaPlayer player, final String path, boolean isForNextPlayer) {
         try {
             player.reset();
+
+            // This will initialise buffering status
+            initBufferingStatus(path, isForNextPlayer);
+
             if (path.startsWith("content://")) {
                 player.setDataSource(mService.get(), Uri.parse(path));
             } else if (path.startsWith("http://")) {
@@ -88,6 +97,7 @@ public final class MultiPlayer2 implements MediaPlayer.OnErrorListener {
 
             if (isForNextPlayer) {
                 player.setOnPreparedListener(standbyPreparedListner = new StandbyPreparedListner());
+                player.setOnBufferingUpdateListener(new StandByPlayerBufferingUpdateListener());
                 player.setOnCompletionListener(null);
                 player.setOnErrorListener(new MediaPlayer.OnErrorListener() {
                     @Override
@@ -98,6 +108,7 @@ public final class MultiPlayer2 implements MediaPlayer.OnErrorListener {
                 player.prepareAsync();
             } else {
                 player.setOnPreparedListener(new CurrentPlayerPreparedListner());
+                player.setOnBufferingUpdateListener(new CurrentPlayerBufferingUpdateListener());
                 player.setOnErrorListener(this);
                 player.setOnCompletionListener(new CurrentPlayerCompleteListner());
                 player.prepareAsync();
@@ -110,6 +121,32 @@ public final class MultiPlayer2 implements MediaPlayer.OnErrorListener {
         }
 
         return true;
+    }
+
+    /**
+     * Initialize buffering status. If path is pointing to local file, then buffering status will be set to 100% else to -1 if
+     * path points to http/https url.
+     *
+     * NOTE: Initialization will be ignored if this method is called for next media plyer, i.e. with <code>isForNextPlayer</code> as true
+     *
+     * @param path  Path from where player is going to play music from
+     * @param isForNextPlayer   Is this for current or next player
+     */
+    private void initBufferingStatus(String path, boolean isForNextPlayer) {
+        // If this is for next media player then ignore
+        if (isForNextPlayer) {
+            return;
+        }
+
+        if (path.startsWith("content://")) {
+            mService.get().updateBufferingStatus(100);
+        }
+        else if (path.startsWith("http://")) {
+            mService.get().updateBufferingStatus(-1);
+        }
+        else {
+            mService.get().updateBufferingStatus(100);
+        }
     }
 
     public void setNextDataSource(final String path) {
@@ -279,7 +316,7 @@ public final class MultiPlayer2 implements MediaPlayer.OnErrorListener {
         public void onPrepared(MediaPlayer mp) {
             Log.d(TAG, "onPrepared: current player");
             mp.start();
-            mHandler.sendEmptyMessage(MusicService.BUFFERED);
+            mHandler.sendEmptyMessage(MusicService.PREPARED);
         }
     }
 
@@ -327,6 +364,24 @@ public final class MultiPlayer2 implements MediaPlayer.OnErrorListener {
         @Override
         public boolean onError(MediaPlayer mp, int what, int extra) {
             return true;
+        }
+    }
+
+    private class CurrentPlayerBufferingUpdateListener implements MediaPlayer.OnBufferingUpdateListener {
+
+        @Override
+        public void onBufferingUpdate(MediaPlayer mp, int percent) {
+            Log.d(TAG, "onBufferingUpdate: CURRENT PLAYER: Called: " + percent + "%");
+            Message msg = mHandler.obtainMessage(BUFFERING_STATUS, percent);
+            mHandler.sendMessageDelayed(msg, 50);
+        }
+    }
+
+    private static class StandByPlayerBufferingUpdateListener implements MediaPlayer.OnBufferingUpdateListener {
+
+        @Override
+        public void onBufferingUpdate(MediaPlayer mp, int percent) {
+            Log.d(TAG, "onBufferingUpdate: STAND BY PLAYER: Called: " + percent + "%");
         }
     }
 

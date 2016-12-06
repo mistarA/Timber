@@ -61,6 +61,7 @@
                 android:maxHeight="2dp"
                 android:paddingTop="18dp"
                 android:progress="30"
+                android:indeterminate="false"
                 android:tag="tint_accent_color" />
 
 
@@ -124,6 +125,13 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="?attr/selectableItemBackgroundBorderless" />
+
+                    <ProgressBar
+                        android:id="@+id/buffer_progress_bar"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:visibility="gone"/>
 
                 </FrameLayout>
 

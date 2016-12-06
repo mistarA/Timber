@@ -255,7 +255,11 @@ public final class ServiceStub extends ITimberService.Stub {
     @Override
     public void setPlayList(List<MusicPlaybackTrack> songs, int position) throws RemoteException {
         mService.get().setPlayList(songs, position);
+    }
 
+    @Override
+    public int getBufferedPercentage() {
+        return mService.get().getBufferedPercentage();
     }
 
 }

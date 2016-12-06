@@ -201,6 +201,11 @@ public class MainActivity extends BaseActivity  {
     }
 
     @Override
+    public void onBufferingStatusChanged(int percentage) {
+
+    }
+
+    @Override
     public void onMetaChanged() {
         super.onMetaChanged();
         setDetailsToHeader();

@@ -29,6 +29,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -449,6 +450,7 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
                 mProgress.removeCallbacks(mUpdateProgress);
             }
             mProgress.postDelayed(mUpdateProgress, 10);
+            onBufferingStatusChanged(MusicPlayer.getBufferedPercentage());
         }
         if (mCircularProgress != null) {
             mCircularProgress.setMax((int) MusicPlayer.duration());
@@ -507,11 +509,23 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
 
     }
 
+    @Override
+    public void onBufferingStatusChanged(int percentage) {
+        int progress = (int)(MusicPlayer.duration() * percentage ) / 100;
+        Log.d("onBufferingStatus", "percentage: " + percentage + "% -> Progress: " + progress);
+        mProgress.setSecondaryProgress(progress);
+    }
+
     public void onMetaChanged() {
         updateSongDetails();
 
         if (recyclerView != null && recyclerView.getAdapter() != null)
             recyclerView.getAdapter().notifyDataSetChanged();
+    }
+
+    @Override
+    public void onPlayerPrepared() {
+
     }
 
     public void setMusicStateListener() {

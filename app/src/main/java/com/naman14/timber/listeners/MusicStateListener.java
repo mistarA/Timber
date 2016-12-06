@@ -38,4 +38,10 @@ public interface MusicStateListener {
      */
     void onMetaChanged();
 
+    /**
+     * Called when {@link MusicService#BUFFERING_STATUS_CHANGED} is invoked
+     */
+    void onBufferingStatusChanged(int percentage);
+
+    void onPlayerPrepared();
 }

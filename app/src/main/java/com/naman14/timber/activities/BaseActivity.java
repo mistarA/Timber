@@ -28,6 +28,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -81,6 +82,8 @@ public class BaseActivity extends AppCompatActivity implements ServiceConnection
         filter.addAction(MusicService.TRACK_ERROR);
         // Player prepared
         filter.addAction(MusicService.PLAYER_PREPARED);
+        // Player prepared
+        filter.addAction(MusicService.BUFFERING_STATUS_CHANGED);
 
         registerReceiver(mPlaybackStatus, filter);
 
@@ -132,6 +135,26 @@ public class BaseActivity extends AppCompatActivity implements ServiceConnection
         for (final MusicStateListener listener : mMusicStateListener) {
             if (listener != null) {
                 listener.onMetaChanged();
+            }
+        }
+    }
+
+    @Override
+    public void onBufferingStatusChanged(int percentage) {
+        // Let the listener know to the buffering status changed
+        for (final MusicStateListener listener : mMusicStateListener) {
+            if (listener != null) {
+                listener.onBufferingStatusChanged(percentage);
+            }
+        }
+    }
+
+    @Override
+    public void onPlayerPrepared() {
+        // Let the listener know to the meta chnaged
+        for (final MusicStateListener listener : mMusicStateListener) {
+            if (listener != null) {
+                listener.onPlayerPrepared();
             }
         }
     }
@@ -255,17 +278,32 @@ public class BaseActivity extends AppCompatActivity implements ServiceConnection
         @Override
         public void onReceive(final Context context, final Intent intent) {
             final String action = intent.getAction();
+
             BaseActivity baseActivity = mReference.get();
             if (baseActivity != null) {
-                if (action.equals(MusicService.META_CHANGED) || action.equals(MusicService.PLAYER_PREPARED)) {
+                if (action.equals(MusicService.META_CHANGED)) {
                     baseActivity.onMetaChanged();
-                } else if (action.equals(MusicService.PLAYSTATE_CHANGED)) {
+                }
+                else if (action.equals(MusicService.PLAYSTATE_CHANGED)) {
 //                    baseActivity.mPlayPauseProgressButton.getPlayPauseButton().updateState();
-                } else if (action.equals(MusicService.REFRESH)) {
+                }
+                else if (action.equals(MusicService.REFRESH)) {
                     baseActivity.restartLoader();
-                } else if (action.equals(MusicService.PLAYLIST_CHANGED)) {
+                }
+                else if (action.equals(MusicService.PLAYLIST_CHANGED)) {
                     baseActivity.onPlaylistChanged();
-                } else if (action.equals(MusicService.TRACK_ERROR)) {
+                }
+                else if (action.equals(MusicService.TRACK_ERROR)) {
+                    final String errorMsg = context.getString(R.string.error_playing_track,
+                            intent.getStringExtra(MusicService.TrackErrorExtra.TRACK_NAME));
+                    Toast.makeText(baseActivity, errorMsg, Toast.LENGTH_SHORT).show();
+                } else if (action.equals(MusicService.PLAYER_PREPARED)) {
+                    baseActivity.onPlayerPrepared();
+                }
+                else if (action.equals(MusicService.BUFFERING_STATUS_CHANGED)) {
+                    int percentage = intent.getIntExtra(MusicService.INTENT_EXTRA_BUFFERED_PERCENTAGE, 0);
+                    Log.d("BaseActivity", "Buffered Percentage: " + percentage);
+                    baseActivity.onBufferingStatusChanged(percentage);
                 }
             }
         }
