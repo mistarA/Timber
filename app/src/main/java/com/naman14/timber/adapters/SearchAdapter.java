@@ -154,7 +154,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ItemHolder
 
     private void setOnPopupMenuListener(ItemHolder itemHolder, final int position) {
 
-        itemHolder.menu.setOnClickListener(new View.OnClickListener() {
+      /*  itemHolder.menu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -190,7 +190,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ItemHolder
                 menu.inflate(R.menu.popup_song);
                 menu.show();
             }
-        });
+        });*/
     }
 
     @Override
@@ -235,7 +235,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ItemHolder
 
         @Override
         public void onClick(View v) {
-            switch (getItemViewType()) {
+         /*   switch (getItemViewType()) {
                 case 0:
                     final Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
@@ -258,7 +258,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ItemHolder
                     break;
                 case 10:
                     break;
-            }
+            }*/
         }
 
     }

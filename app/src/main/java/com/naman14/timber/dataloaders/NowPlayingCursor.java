@@ -192,7 +192,7 @@ public class NowPlayingCursor extends AbstractCursor {
 
     private void makeNowPlayingCursor() {
         mQueueCursor = null;
-        mNowPlaying = MusicPlayer.getQueue();
+//        mNowPlaying = MusicPlayer.getQueue();
         Log.d("lol1", mNowPlaying.toString() + "   " + mNowPlaying.length);
         mSize = mNowPlaying.length;
         if (mSize == 0) {
@@ -238,7 +238,7 @@ public class NowPlayingCursor extends AbstractCursor {
             }
         }
         if (removed > 0) {
-            mNowPlaying = MusicPlayer.getQueue();
+//            mNowPlaying = MusicPlayer.getQueue();
             mSize = mNowPlaying.length;
             if (mSize == 0) {
                 mCursorIndexes = null;

@@ -88,7 +88,7 @@ public class BaseQueueAdapter extends RecyclerView.Adapter<BaseQueueAdapter.Item
 
     private void setOnPopupMenuListener(ItemHolder itemHolder, final int position) {
 
-        itemHolder.popupMenu.setOnClickListener(new View.OnClickListener() {
+     /*   itemHolder.popupMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -130,7 +130,7 @@ public class BaseQueueAdapter extends RecyclerView.Adapter<BaseQueueAdapter.Item
                 menu.inflate(R.menu.popup_song);
                 menu.show();
             }
-        });
+        });*/
     }
 
     public long[] getSongIds() {
@@ -159,7 +159,7 @@ public class BaseQueueAdapter extends RecyclerView.Adapter<BaseQueueAdapter.Item
 
         @Override
         public void onClick(View v) {
-            final Handler handler = new Handler();
+           /* final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -173,7 +173,7 @@ public class BaseQueueAdapter extends RecyclerView.Adapter<BaseQueueAdapter.Item
                         }
                     }, 50);
                 }
-            }, 100);
+            }, 100);*/
 
         }
 

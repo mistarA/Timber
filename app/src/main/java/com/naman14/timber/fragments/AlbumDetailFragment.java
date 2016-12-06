@@ -151,7 +151,7 @@ public class AlbumDetailFragment extends Fragment {
                     @Override
                     public void run() {
                         AlbumSongsAdapter adapter = (AlbumSongsAdapter) recyclerView.getAdapter();
-                        MusicPlayer.playAll(getActivity(), adapter.getSongIds(), 0, albumID, TimberUtils.IdType.Album, true);
+//                        MusicPlayer.playAll(getActivity(), adapter.getSongIds(), 0, albumID, TimberUtils.IdType.Album, true);
                         NavigationUtils.navigateToNowplaying(getActivity(), false);
                     }
                 }, 150);

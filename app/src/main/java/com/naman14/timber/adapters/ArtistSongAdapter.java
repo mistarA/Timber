@@ -100,7 +100,7 @@ public class ArtistSongAdapter extends RecyclerView.Adapter<ArtistSongAdapter.It
 
     private void setOnPopupMenuListener(ItemHolder itemHolder, final int position) {
 
-        itemHolder.menu.setOnClickListener(new View.OnClickListener() {
+ /*       itemHolder.menu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -142,7 +142,7 @@ public class ArtistSongAdapter extends RecyclerView.Adapter<ArtistSongAdapter.It
                 menu.inflate(R.menu.popup_song);
                 menu.show();
             }
-        });
+        });*/
     }
 
     private void setUpAlbums(RecyclerView albumsRecyclerview) {
@@ -207,14 +207,14 @@ public class ArtistSongAdapter extends RecyclerView.Adapter<ArtistSongAdapter.It
 
         @Override
         public void onClick(View v) {
-            Handler handler = new Handler();
+           /* Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     MusicPlayer.playAll(mContext, songIDs, getAdapterPosition() - 1, artistID, TimberUtils.IdType.Artist, false);
                     NavigationUtils.navigateToNowplaying(mContext, true);
                 }
-            }, 100);
+            }, 100);*/
 
         }
 

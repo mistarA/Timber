@@ -246,7 +246,7 @@ public class FolderAdapter extends RecyclerView.Adapter<FolderAdapter.ItemHolder
                                 j++;
                             }
                         }
-                        MusicPlayer.playAll(mContext, ret, current, -1, TimberUtils.IdType.NA, false);
+//                        MusicPlayer.playAll(mContext, ret, current, -1, TimberUtils.IdType.NA, false);
                     }
                 }, 100);
 
