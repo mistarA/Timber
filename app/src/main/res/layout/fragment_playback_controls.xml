@@ -126,6 +126,13 @@
                         android:layout_height="match_parent"
                         android:background="?attr/selectableItemBackgroundBorderless" />
 
+                    <ProgressBar
+                        android:id="@+id/buffer_progress_bar"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:visibility="gone"/>
+
                 </FrameLayout>
 
                 <net.steamcrafted.materialiconlib.MaterialIconView
