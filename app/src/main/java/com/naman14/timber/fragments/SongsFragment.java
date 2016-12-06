@@ -30,7 +30,9 @@ import com.naman14.timber.R;
 import com.naman14.timber.activities.BaseActivity;
 import com.naman14.timber.adapters.SongsListAdapter;
 import com.naman14.timber.helpers.MusicPlaybackTrack;
+import com.naman14.timber.helpers.Song;
 import com.naman14.timber.listeners.MusicStateListener;
+import com.naman14.timber.musicplayer.MusicPlayer;
 import com.naman14.timber.utils.FileCrypto;
 import com.naman14.timber.utils.PreferencesUtility;
 import com.naman14.timber.widgets.DividerItemDecoration;
@@ -52,10 +54,12 @@ public class SongsFragment extends Fragment implements MusicStateListener {
     private SongsListAdapter mAdapter;
     private RecyclerView recyclerView;
     private PreferencesUtility mPreferences;
-    List<MusicPlaybackTrack> songList;
+    List<Song> songList;
     public static String fileName = "Jabra FAN.mp4";
     public static String fileName1 = "Desi Girl.mp3";
     public static String fileName2 = "Dhol Baaje.mp3";
+
+    private List<MusicPlaybackTrack> musicPlaybackTracks;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -80,13 +84,17 @@ public class SongsFragment extends Fragment implements MusicStateListener {
 //        new loadSongs().execute("");
 
         songList = new ArrayList<>();
-        songList.add(new MusicPlaybackTrack("Jabra FAN from local", fileName));
-        songList.add(new MusicPlaybackTrack("O Janiya","http://www.mp3khan.in/files/Bollywood%20Mp3%20and%20Videos/New%20Relesed%20Bollywood/Force%202%20Movies%20Songs/02%20-%20O%20Janiya%20-%20Force%202.mp3"));
-        songList.add(new MusicPlaybackTrack("Desi Girl from local", fileName1));
-        songList.add(new MusicPlaybackTrack("Dil Mein Chhupa Loonga","http://www.mp3khan.in/files/Bollywood%20Mp3%20and%20Videos/New%20Relesed%20Bollywood/Wajah%20Tum%20Ho%20Movies%20Songs/03%20-%20Dil%20Mein%20Chhupa%20Loonga%20-%20Wajah%20Tum%20Ho.mp3"));
-        songList.add(new MusicPlaybackTrack("Dhol Baaje from local", fileName2));
-        songList.add(new MusicPlaybackTrack("Let's Breakup","http://mp3khan.top/music/indian_movies/Dear%20Zindagi%20(2016)/04%20-%20Lets%20Break%20Up%20-%20Dear%20Zindagi%20[DJMaza.Cool].mp3"));
-        songList.add(new MusicPlaybackTrack("Haanikaarak Bapu","http://www.mp3khan.in/files/Bollywood%20Mp3%20and%20Videos/New%20Relesed%20Bollywood/Dangal%20Movies%20Songs/Haanikaarak%20Bapu%20-%20128Kbps.mp3"));
+//        songList.add(new Song("Jabra FAN", encrypted_fileName));
+        songList.add(new Song("Tere Naal Ishqa","http://www.mp3khan.in/files/Bollywood Mp3 and Videos/New Relesed Bollywood/Shivaay Movies Songs/04 - Tere Naal Ishqa - Shivaay  [ Mp3Khan.in ] .mp3"));
+//        songList.add(new MusicPlaybackTrack("Chittiyaan Kalaiyaan","content://media/external/audio/media/1964"));
+        songList.add(new Song("Love you Zindagi","http://mp3khan.top/music/indian_movies/Dear%20Zindagi%20(2016)/01%20-%20Love%20You%20Zindagi%20-%20Dear%20Zindagi%20[DJMaza.Cool].mp3"));
+        songList.add(new Song("The Eagles - California","content://media/external/audio/media/2867"));
+        songList.add(new Song("Ae Zindagi","http://mp3khan.top/music/indian_movies/Dear%20Zindagi%20(2016)/07%20-%20Ae%20Zindagi%20Gale%20Laga%20Le%20(Take%201)%20-%20Dear%20Zindagi%20[DJMaza.Cool].mp3"));
+        songList.add(new Song("O Janiya","http://www.mp3khan.in/files/Bollywood Mp3 and Videos/New Relesed Bollywood/Force 2 Movies Songs/02 - O Janiya - Force 2.mp3"));
+//        songList.add(new MusicPlaybackTrack("Waka waka","content://media/external/audio/media/1965"));
+        songList.add(new Song("Dil Mein Chhupa Loonga","http://www.mp3khan.in/files/Bollywood Mp3 and Videos/New Relesed Bollywood/Wajah Tum Ho Movies Songs/03 - Dil Mein Chhupa Loonga - Wajah Tum Ho.mp3"));
+        songList.add(new Song("Let's Breakup","http://mp3khan.top/music/indian_movies/Dear%20Zindagi%20(2016)/04%20-%20Lets%20Break%20Up%20-%20Dear%20Zindagi%20[DJMaza.Cool].mp3"));
+        songList.add(new Song("Haanikaarak Bapu","http://www.mp3khan.in/files/Bollywood Mp3 and Videos/New Relesed Bollywood/Dangal Movies Songs/Haanikaarak Bapu - 128Kbps.mp3"));
 
         mAdapter = new SongsListAdapter((AppCompatActivity) getActivity(), songList, false, false);
         recyclerView.setAdapter(mAdapter);
@@ -95,6 +103,21 @@ public class SongsFragment extends Fragment implements MusicStateListener {
         ((BaseActivity) getActivity()).setMusicStateListenerListener(this);
 
         return rootView;
+    }
+
+    private void initMusicPlaybackTracks() {
+        musicPlaybackTracks = new ArrayList<>();
+        musicPlaybackTracks.add(new MusicPlaybackTrack("Jabra FAN", encrypted_fileName));
+        musicPlaybackTracks.add(new MusicPlaybackTrack("Tere Naal Ishqa","http://www.mp3khan.in/files/Bollywood Mp3 and Videos/New Relesed Bollywood/Shivaay Movies Songs/04 - Tere Naal Ishqa - Shivaay  [ Mp3Khan.in ] .mp3"));
+//        songList.add(new MusicPlaybackTrack("Chittiyaan Kalaiyaan","content://media/external/audio/media/1964"));
+        musicPlaybackTracks.add(new MusicPlaybackTrack("Love you Zindagi","http://mp3khan.top/music/indian_movies/Dear%20Zindagi%20(2016)/01%20-%20Love%20You%20Zindagi%20-%20Dear%20Zindagi%20[DJMaza.Cool].mp3"));
+        musicPlaybackTracks.add(new MusicPlaybackTrack("The Eagles - California","content://media/external/audio/media/2867"));
+        musicPlaybackTracks.add(new MusicPlaybackTrack("Ae Zindagi","http://mp3khan.top/music/indian_movies/Dear%20Zindagi%20(2016)/07%20-%20Ae%20Zindagi%20Gale%20Laga%20Le%20(Take%201)%20-%20Dear%20Zindagi%20[DJMaza.Cool].mp3"));
+        musicPlaybackTracks.add(new MusicPlaybackTrack("O Janiya","http://www.mp3khan.in/files/Bollywood Mp3 and Videos/New Relesed Bollywood/Force 2 Movies Songs/02 - O Janiya - Force 2.mp3"));
+//        songList.add(new MusicPlaybackTrack("Waka waka","content://media/external/audio/media/1965"));
+        musicPlaybackTracks.add(new MusicPlaybackTrack("Dil Mein Chhupa Loonga","http://www.mp3khan.in/files/Bollywood Mp3 and Videos/New Relesed Bollywood/Wajah Tum Ho Movies Songs/03 - Dil Mein Chhupa Loonga - Wajah Tum Ho.mp3"));
+        musicPlaybackTracks.add(new MusicPlaybackTrack("Let's Breakup","http://mp3khan.top/music/indian_movies/Dear%20Zindagi%20(2016)/04%20-%20Lets%20Break%20Up%20-%20Dear%20Zindagi%20[DJMaza.Cool].mp3"));
+        musicPlaybackTracks.add(new MusicPlaybackTrack("Haanikaarak Bapu","http://www.mp3khan.in/files/Bollywood Mp3 and Videos/New Relesed Bollywood/Dangal Movies Songs/Haanikaarak Bapu - 128Kbps.mp3"));
     }
 
     public void restartLoader() {
@@ -137,10 +160,11 @@ public class SongsFragment extends Fragment implements MusicStateListener {
     public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
-//        if (!isPlayListSet) {
-//            MusicPlayer.setPlayList(getActivity(), songList, 0);
-//            isPlayListSet = true;
-//        }
+        initMusicPlaybackTracks();
+        if (!isPlayListSet) {
+            MusicPlayer.setPlayList(getActivity(), musicPlaybackTracks, 0);
+            isPlayListSet = true;
+        }
     }
 
     @Override
