@@ -306,6 +306,11 @@ public class QuickControlsFragment extends Fragment implements MusicStateListene
 
     }
 
+    @Override
+    public void onBufferingStatusChanged(int percentage) {
+        mSeekBar.setSecondaryProgress(percentage);
+    }
+
     public void onMetaChanged() {
         updateNowplayingCard();
         updateState();

@@ -84,6 +84,11 @@ public class QueueFragment extends Fragment implements MusicStateListener {
 
     }
 
+    @Override
+    public void onBufferingStatusChanged(int percentage) {
+
+    }
+
     public void onMetaChanged() {
         if (mAdapter != null)
             mAdapter.notifyDataSetChanged();

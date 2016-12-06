@@ -105,6 +105,11 @@ public class SongsFragment extends Fragment implements MusicStateListener {
 
     }
 
+    @Override
+    public void onBufferingStatusChanged(int percentage) {
+
+    }
+
     boolean isPlayListSet = false;
     public void onMetaChanged() {
         if (mAdapter != null) {

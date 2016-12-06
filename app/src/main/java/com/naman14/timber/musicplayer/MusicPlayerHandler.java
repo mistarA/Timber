@@ -4,9 +4,12 @@ import android.media.AudioManager;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 
 import java.lang.ref.WeakReference;
 
+import static com.naman14.timber.musicplayer.MusicService.BUFFERING_STATUS;
+import static com.naman14.timber.musicplayer.MusicService.BUFFERING_STATUS_CHANGED;
 import static com.naman14.timber.musicplayer.MusicService.FADEDOWN;
 import static com.naman14.timber.musicplayer.MusicService.FADEUP;
 import static com.naman14.timber.musicplayer.MusicService.FOCUSCHANGE;
@@ -14,7 +17,7 @@ import static com.naman14.timber.musicplayer.MusicService.META_CHANGED;
 import static com.naman14.timber.musicplayer.MusicService.RELEASE_WAKELOCK;
 import static com.naman14.timber.musicplayer.MusicService.REPEAT_CURRENT;
 import static com.naman14.timber.musicplayer.MusicService.SERVER_DIED;
-import static com.naman14.timber.musicplayer.MusicService.BUFFERED;
+import static com.naman14.timber.musicplayer.MusicService.PREPARED;
 import static com.naman14.timber.musicplayer.MusicService.PLAYER_PREPARED;
 import static com.naman14.timber.musicplayer.MusicService.TRACK_ENDED;
 import static com.naman14.timber.musicplayer.MusicService.TRACK_WENT_TO_NEXT;
@@ -60,6 +63,7 @@ public final class MusicPlayerHandler extends Handler {
                     case SERVER_DIED:
                         if (service.isPlaying()) {
                             final TrackErrorInfo info = (TrackErrorInfo) msg.obj;
+                            Log.d("MusicPlayerHandler", "sendErrorMessage due to server died");
                             service.sendErrorMessage(info.mTrackName);
 
 
@@ -89,9 +93,15 @@ public final class MusicPlayerHandler extends Handler {
                             service.gotoNext(false);
                         }
                         break;
-                    case BUFFERED:
+                    case PREPARED:
                         mService.get().scrobble();
                         service.notifyChange(PLAYER_PREPARED);
+                        break;
+                    case BUFFERING_STATUS:
+                        mService.get().scrobble();
+                        final int percentage = (Integer) msg.obj;
+                        service.updateBufferingStatus(percentage);
+                        service.notifyChange(BUFFERING_STATUS_CHANGED);
                         break;
                     case RELEASE_WAKELOCK:
                         service.mWakeLock.release();

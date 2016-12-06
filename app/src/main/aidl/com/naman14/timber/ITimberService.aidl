@@ -54,5 +54,6 @@ interface ITimberService
     int getAudioSessionId();
     void setLockscreenAlbumArt(boolean enabled);
     void setPlayList(in List<MusicPlaybackTrack> songs, int position);
+    int getBufferedPercentage();
 }
 

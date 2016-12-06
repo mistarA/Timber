@@ -676,6 +676,17 @@ public class MusicPlayer {
         return 0;
     }
 
+    public static final int getBufferedPercentage() {
+        if (mService != null) {
+            try {
+                return mService.getBufferedPercentage();
+            } catch (final RemoteException ignored) {
+            } catch (final IllegalStateException ignored) {
+            }
+        }
+        return 0;
+    }
+
     public static void clearQueue() {
         if (mService!=null) {
             try {
