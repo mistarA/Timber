@@ -136,7 +136,12 @@ public class SongsFragment extends Fragment implements MusicStateListener {
         }
     }
 
-//    private void reloadAdapter() {
+    @Override
+    public void onPlayerPrepared() {
+
+    }
+
+    //    private void reloadAdapter() {
 //        new AsyncTask<Void, Void, Void>() {
 //            @Override
 //            protected Void doInBackground(final Void... unused) {

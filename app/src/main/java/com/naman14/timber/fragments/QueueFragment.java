@@ -94,6 +94,11 @@ public class QueueFragment extends Fragment implements MusicStateListener {
             mAdapter.notifyDataSetChanged();
     }
 
+    @Override
+    public void onPlayerPrepared() {
+
+    }
+
     private class loadQueueSongs extends AsyncTask<String, Void, String> {
 
         @Override

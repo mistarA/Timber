@@ -154,6 +154,16 @@ public class BaseActivity extends ATEActivity implements ServiceConnection, Musi
     }
 
     @Override
+    public void onPlayerPrepared() {
+        // Let the listener know to the meta chnaged
+        for (final MusicStateListener listener : mMusicStateListener) {
+            if (listener != null) {
+                listener.onPlayerPrepared();
+            }
+        }
+    }
+
+    @Override
     public void restartLoader() {
         // Let the listener know to update a list
         for (final MusicStateListener listener : mMusicStateListener) {
@@ -283,7 +293,7 @@ public class BaseActivity extends ATEActivity implements ServiceConnection, Musi
 
             BaseActivity baseActivity = mReference.get();
             if (baseActivity != null) {
-                if (action.equals(MusicService.META_CHANGED) || action.equals(MusicService.PLAYER_PREPARED)) {
+                if (action.equals(MusicService.META_CHANGED)) {
                     baseActivity.onMetaChanged();
                 }
                 else if (action.equals(MusicService.PLAYSTATE_CHANGED)) {
@@ -299,6 +309,8 @@ public class BaseActivity extends ATEActivity implements ServiceConnection, Musi
                     final String errorMsg = context.getString(R.string.error_playing_track,
                             intent.getStringExtra(MusicService.TrackErrorExtra.TRACK_NAME));
                     Toast.makeText(baseActivity, errorMsg, Toast.LENGTH_SHORT).show();
+                } else if (action.equals(MusicService.PLAYER_PREPARED)) {
+                    baseActivity.onPlayerPrepared();
                 }
                 else if (action.equals(MusicService.BUFFERING_STATUS_CHANGED)) {
                     int percentage = intent.getIntExtra(MusicService.INTENT_EXTRA_BUFFERED_PERCENTAGE, 0);

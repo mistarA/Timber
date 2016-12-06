@@ -55,6 +55,7 @@ public class QuickControlsFragment extends Fragment implements MusicStateListene
 
     public static View topContainer;
     private ProgressBar mProgress;
+    private ProgressBar mBufferProgress;
     private SeekBar mSeekBar;
     public Runnable mUpdateProgress = new Runnable() {
 
@@ -135,6 +136,7 @@ public class QuickControlsFragment extends Fragment implements MusicStateListene
         playPauseWrapper.setOnClickListener(mPlayPauseListener);
         playPauseWrapperExpanded.setOnClickListener(mPlayPauseExpandedListener);
         mProgress = (ProgressBar) rootView.findViewById(R.id.song_progress_normal);
+        mBufferProgress = (ProgressBar) rootView.findViewById(R.id.buffer_progress_bar);
         mSeekBar = (SeekBar) rootView.findViewById(R.id.song_progress);
         mTitle = (TextView) rootView.findViewById(R.id.title);
         mArtist = (TextView) rootView.findViewById(R.id.artist);
@@ -286,6 +288,10 @@ public class QuickControlsFragment extends Fragment implements MusicStateListene
                 mPlayPauseExpanded.setPlayed(true);
                 mPlayPauseExpanded.startAnimation();
             }
+            if (mBufferProgress.getVisibility() != View.VISIBLE && MusicPlayer.getBufferedPercentage() <= 0) {
+                mBufferProgress.setVisibility(View.VISIBLE);
+                mPlayPauseExpanded.setVisibility(View.INVISIBLE);
+            }
         } else {
             if (mPlayPause.isPlayed()) {
                 mPlayPause.setPlayed(false);
@@ -314,6 +320,14 @@ public class QuickControlsFragment extends Fragment implements MusicStateListene
     public void onMetaChanged() {
         updateNowplayingCard();
         updateState();
+    }
+
+    @Override
+    public void onPlayerPrepared() {
+        if (mBufferProgress.getVisibility() == View.VISIBLE) {
+            mBufferProgress.setVisibility(View.GONE);
+            mPlayPauseExpanded.setVisibility(View.VISIBLE);
+        }
     }
 
     private class setBlurredAlbumArt extends AsyncTask<Bitmap, Void, Drawable> {

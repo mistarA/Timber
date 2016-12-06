@@ -569,6 +569,11 @@ public class BaseNowplayingFragment extends Fragment implements MusicStateListen
             recyclerView.getAdapter().notifyDataSetChanged();
     }
 
+    @Override
+    public void onPlayerPrepared() {
+
+    }
+
     public void setMusicStateListener() {
         ((BaseActivity) getActivity()).setMusicStateListenerListener(this);
     }
