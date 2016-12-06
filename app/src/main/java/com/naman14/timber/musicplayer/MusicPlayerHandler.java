@@ -95,7 +95,6 @@ public final class MusicPlayerHandler extends Handler {
                         service.notifyChange(PLAYER_PREPARED);
                         break;
                     case BUFFERING_STATUS:
-                        mService.get().scrobble();
                         final int percentage = (Integer) msg.obj;
                         service.updateBufferingStatus(percentage);
                         service.notifyChange(BUFFERING_STATUS_CHANGED);

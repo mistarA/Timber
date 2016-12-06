@@ -124,7 +124,8 @@ public class BaseActivity extends AppCompatActivity implements ServiceConnection
 
         try {
             unregisterReceiver(mPlaybackStatus);
-        } catch (final Throwable e) {
+        }
+        catch (final Throwable e) {
         }
         mMusicStateListener.clear();
     }
@@ -294,10 +295,9 @@ public class BaseActivity extends AppCompatActivity implements ServiceConnection
                     baseActivity.onPlaylistChanged();
                 }
                 else if (action.equals(MusicService.TRACK_ERROR)) {
-                    final String errorMsg = context.getString(R.string.error_playing_track,
-                            intent.getStringExtra(MusicService.TrackErrorExtra.TRACK_NAME));
-                    Toast.makeText(baseActivity, errorMsg, Toast.LENGTH_SHORT).show();
-                } else if (action.equals(MusicService.PLAYER_PREPARED)) {
+
+                }
+                else if (action.equals(MusicService.PLAYER_PREPARED)) {
                     baseActivity.onPlayerPrepared();
                 }
                 else if (action.equals(MusicService.BUFFERING_STATUS_CHANGED)) {
