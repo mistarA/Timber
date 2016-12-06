@@ -38,8 +38,6 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.naman14.timber.musicplayer.MusicPlayer;
 import com.naman14.timber.R;
-import com.naman14.timber.provider.RecentStore;
-import com.naman14.timber.provider.SongPlayCount;
 
 import java.io.File;
 
@@ -207,13 +205,6 @@ public class TimberUtils {
         });
     }
 
-    public static void clearTopTracks(Context context) {
-        SongPlayCount.getInstance(context).deleteAll();
-    }
-
-    public static void clearRecent(Context context) {
-        RecentStore.getInstance(context).deleteAll();
-    }
 
     public static void clearLastAdded(Context context) {
         PreferencesUtility.getInstance(context)
@@ -269,10 +260,6 @@ public class TimberUtils {
                 // Remove from current playlist
                 final long id = c.getLong(0);
                 MusicPlayer.removeTrack(id);
-                // Remove the track from the play count
-                SongPlayCount.getInstance(context).removeItem(id);
-                // Remove any items in the recents database
-                RecentStore.getInstance(context).removeItem(id);
                 c.moveToNext();
             }
 
