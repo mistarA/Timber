@@ -33,6 +33,7 @@ import com.naman14.timber.helpers.Song;
 import com.naman14.timber.utils.NavigationUtils;
 import com.naman14.timber.utils.TimberUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AlbumSongsAdapter extends RecyclerView.Adapter<AlbumSongsAdapter.ItemHolder> {
@@ -102,9 +103,9 @@ public class AlbumSongsAdapter extends RecyclerView.Adapter<AlbumSongsAdapter.It
 //                                NavigationUtils.goToArtist(mContext, arraylist.get(position).artistId);
                                 break;
                             case R.id.popup_song_addto_queue:
-                                Song[] id = new Song[1];
-                                id[0] = arraylist.get(position);
-                                MusicPlayer.addToQueue(mContext, id, -1, TimberUtils.IdType.NA);
+                                List<Song> songsQueue = new ArrayList<>();
+                                songsQueue.add(arraylist.get(position));
+                                MusicPlayer.addToQueue(mContext, songsQueue, -1, TimberUtils.IdType.NA);
                                 break;
                             case R.id.popup_song_addto_playlist:
                                 AddPlaylistDialog.newInstance(arraylist.get(position)).show(((AppCompatActivity) mContext).getSupportFragmentManager(), "ADD_PLAYLIST");
