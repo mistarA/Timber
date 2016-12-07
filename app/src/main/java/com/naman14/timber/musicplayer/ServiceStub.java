@@ -4,6 +4,7 @@ import android.os.RemoteException;
 
 import com.naman14.timber.ITimberService;
 import com.naman14.timber.helpers.MusicPlaybackTrack;
+import com.naman14.timber.helpers.Song;
 import com.naman14.timber.utils.TimberUtils;
 
 import java.lang.ref.WeakReference;
@@ -24,7 +25,7 @@ public final class ServiceStub extends ITimberService.Stub {
     }
 
     @Override
-    public void open(final long[] list, final int position, long sourceId, int sourceType)
+    public void open(final List<Song> list, final int position, long sourceId, int sourceType)
             throws RemoteException {
         mService.get().open(list, position, sourceId, TimberUtils.IdType.getTypeById(sourceType));
     }
@@ -56,9 +57,9 @@ public final class ServiceStub extends ITimberService.Stub {
     }
 
     @Override
-    public void enqueue(final long[] list, final int action, long sourceId, int sourceType)
+    public void enqueue(final List<Song> songs, final int action, long sourceId, int sourceType)
             throws RemoteException {
-        mService.get().enqueue(list, action, sourceId, TimberUtils.IdType.getTypeById(sourceType));
+        mService.get().enqueue(songs, action, sourceId, TimberUtils.IdType.getTypeById(sourceType));
     }
 
     @Override
@@ -82,7 +83,7 @@ public final class ServiceStub extends ITimberService.Stub {
     }
 
     @Override
-    public long[] getQueue() throws RemoteException {
+    public List<Song> getQueue() throws RemoteException {
         return mService.get().getQueue();
     }
 

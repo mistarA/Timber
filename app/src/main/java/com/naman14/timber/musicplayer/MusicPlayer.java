@@ -39,19 +39,21 @@ import com.naman14.timber.utils.TimberUtils.IdType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.WeakHashMap;
 
 public class MusicPlayer {
 
     private static final WeakHashMap<Context, ServiceBinder> mConnectionMap;
-    private static final long[] sEmptyList;
+    private static final List<Song> sEmptyList;
     public static ITimberService mService = null;
     private static ContentValues[] mContentValuesCache = null;
 
     static {
         mConnectionMap = new WeakHashMap<Context, ServiceBinder>();
-        sEmptyList = new long[0];
+        sEmptyList = new ArrayList<>();
     }
 
     public static final ServiceToken bindToService(final Context context,
@@ -339,7 +341,7 @@ public class MusicPlayer {
         return -1;
     }
 
-    public static final long[] getQueue() {
+    public static final List<Song> getQueue() {
         try {
             if (mService != null) {
                 return mService.getQueue();
@@ -460,24 +462,24 @@ public class MusicPlayer {
         }
     }
 
-    public static void playArtist(final Context context, final long artistId, int position, boolean shuffle) {
+  /*  public static void playArtist(final Context context, final long artistId, int position, boolean shuffle) {
         final long[] artistList = getSongListForArtist(context, artistId);
         if (artistList != null) {
             playAll(context, artistList, position, artistId, IdType.Artist, shuffle);
         }
-    }
+    }*/
 
-    public static void playAlbum(final Context context, final long albumId, int position, boolean shuffle) {
+  /*  public static void playAlbum(final Context context, final long albumId, int position, boolean shuffle) {
         final long[] albumList = getSongListForAlbum(context, albumId);
         if (albumList != null) {
             playAll(context, albumList, position, albumId, IdType.Album, shuffle);
         }
-    }
+    }*/
 
-    public static void playAll(final Context context, final long[] list, int position,
+    public static void playAll(final Context context, final List<Song> list, int position,
                                final long sourceId, final IdType sourceType,
                                final boolean forceShuffle) {
-        if (list == null || list.length == 0 || mService == null) {
+        if (list == null || list.size() == 0 || mService == null) {
             return;
         }
         try {
@@ -486,9 +488,9 @@ public class MusicPlayer {
             }
             final long currentId = mService.getAudioId();
             final int currentQueuePosition = getQueuePosition();
-            if (position != -1 && currentQueuePosition == position && currentId == list[position]) {
-                final long[] playlist = getQueue();
-                if (Arrays.equals(list, playlist)) {
+            if (position != -1 && currentQueuePosition == position && currentId == list.get(position).id) {
+                final List<Song> playlist = getQueue();
+                if (list.equals(playlist)) {
                     mService.play();
                     return;
                 }
@@ -516,20 +518,20 @@ public class MusicPlayer {
         }
     }
 
-    public static void playNext(Context context, final long[] list, final long sourceId, final IdType sourceType) {
+    public static void playNext(Context context, final List<Song> songs, final long sourceId, final IdType sourceType) {
         if (mService == null) {
             return;
         }
         try {
-            mService.enqueue(list, MusicService.NEXT, sourceId, sourceType.mId);
-            final String message = makeLabel(context, R.plurals.NNNtrackstoqueue, list.length);
+            mService.enqueue(songs, MusicService.NEXT, sourceId, sourceType.mId);
+            final String message = makeLabel(context, R.plurals.NNNtrackstoqueue, songs.size());
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
         } catch (final RemoteException ignored) {
         }
     }
 
     public static void shuffleAll(final Context context) {
-        Cursor cursor = SongLoader.makeSongCursor(context, null, null);
+       /* Cursor cursor = SongLoader.makeSongCursor(context, null, null);
         final long[] mTrackList = SongLoader.getSongListForCursor(cursor);
         final int position = 0;
         if (mTrackList.length == 0 || mService == null) {
@@ -539,20 +541,20 @@ public class MusicPlayer {
             mService.setShuffleMode(MusicService.SHUFFLE_NORMAL);
             final long mCurrentId = mService.getAudioId();
             final int mCurrentQueuePosition = getQueuePosition();
-            if (position != -1 && mCurrentQueuePosition == position
+            *//*if (position != -1 && mCurrentQueuePosition == position
                     && mCurrentId == mTrackList[position]) {
-                final long[] mPlaylist = getQueue();
+                final Song[] mPlaylist = getQueue();
                 if (Arrays.equals(mTrackList, mPlaylist)) {
                     mService.play();
                     return;
                 }
-            }
+            }*//*
             mService.open(mTrackList, -1, -1, IdType.NA.mId);
             mService.play();
             cursor.close();
             cursor = null;
         } catch (final RemoteException ignored) {
-        }
+        }*/
     }
 
     public static final long[] getSongListForArtist(final Context context, final long id) {
@@ -570,7 +572,7 @@ public class MusicPlayer {
             cursor = null;
             return mList;
         }*/
-        return sEmptyList;
+        return null;
     }
 
     public static final long[] getSongListForAlbum(final Context context, final long id) {
@@ -588,7 +590,7 @@ public class MusicPlayer {
             cursor = null;
             return mList;
         }*/
-        return sEmptyList;
+        return null;
     }
 
     public static final int getSongCountForAlbumInt(final Context context, final long id) {
@@ -698,14 +700,14 @@ public class MusicPlayer {
         }
     }
 
-    public static void addToQueue(final Context context, final long[] list, long sourceId,
+    public static void addToQueue(final Context context, List<Song> list, long sourceId,
                                   IdType sourceType) {
         if (mService == null) {
             return;
         }
         try {
             mService.enqueue(list, MusicService.LAST, sourceId, sourceType.mId);
-            final String message = makeLabel(context, R.plurals.NNNtrackstoqueue, list.length);
+            final String message = makeLabel(context, R.plurals.NNNtrackstoqueue, list.size());
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
         } catch (final RemoteException ignored) {
         }

@@ -9,13 +9,13 @@ import com.naman14.timber.helpers.Song;
 interface ITimberService
 {
     void openFile(String path);
-    void open(in long [] list, int position, long sourceId, int sourceType);
+    void open(in List<Song> list, int position, long sourceId, int sourceType);
     void stop();
     void pause();
     void play();
     void prev(boolean forcePrevious);
     void next();
-    void enqueue(in long [] list, int action, long sourceId, int sourceType);
+    void enqueue(in List<Song> songs, int action, long sourceId, int sourceType);
     void setQueuePosition(int index);
     void setShuffleMode(int shufflemode);
     void setRepeatMode(int repeatmode);
@@ -23,7 +23,7 @@ interface ITimberService
     void refresh();
     void playlistChanged();
     boolean isPlaying();
-    long [] getQueue();
+    List<Song> getQueue();
     long getQueueItemAtPosition(int position);
     int getQueueSize();
     int getQueuePosition();

@@ -38,6 +38,7 @@ import com.naman14.timber.utils.TimberUtils;
 import com.naman14.timber.widgets.BubbleTextGetter;
 import com.naman14.timber.widgets.MusicVisualizer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SongsListAdapter extends RecyclerView.Adapter<SongsListAdapter.ItemHolder> implements BubbleTextGetter {
@@ -140,12 +141,14 @@ public class SongsListAdapter extends RecyclerView.Adapter<SongsListAdapter.Item
                                 notifyItemRemoved(position);
                                 break;
                             case R.id.popup_song_play:
-                                MusicPlayer.playAll(mContext, songIDs, position, -1, TimberUtils.IdType.NA, false);
+                                List<Song> songList = new ArrayList<>();
+                                songs.add(arraylist.get(position));
+                                MusicPlayer.playAll(mContext, songList, position, -1, TimberUtils.IdType.NA, false);
                                 break;
                             case R.id.popup_song_play_next:
-                                long[] ids = new long[1];
-                                ids[0] = arraylist.get(position).id;
-                                MusicPlayer.playNext(mContext, ids, -1, TimberUtils.IdType.NA);
+                                List<Song> songs = new ArrayList<>();
+                                songs.add(arraylist.get(position));
+                                MusicPlayer.playNext(mContext, songs, -1, TimberUtils.IdType.NA);
                                 break;
                             case R.id.popup_song_goto_album:
                                 NavigationUtils.goToAlbum(mContext, arraylist.get(position).albumId);
@@ -154,9 +157,9 @@ public class SongsListAdapter extends RecyclerView.Adapter<SongsListAdapter.Item
                                 NavigationUtils.goToArtist(mContext, arraylist.get(position).artistId);
                                 break;
                             case R.id.popup_song_addto_queue:
-                                long[] id = new long[1];
-                                id[0] = arraylist.get(position).id;
-                                MusicPlayer.addToQueue(mContext, id, -1, TimberUtils.IdType.NA);
+                                List<Song> songsQueue = new ArrayList<Song>();
+                                songsQueue.add(arraylist.get(position + 1 ));
+                                MusicPlayer.addToQueue(mContext, songsQueue, -1, TimberUtils.IdType.NA);
                                 break;
                             case R.id.popup_song_addto_playlist:
                                 AddPlaylistDialog.newInstance(arraylist.get(position)).show(mContext.getSupportFragmentManager(), "ADD_PLAYLIST");

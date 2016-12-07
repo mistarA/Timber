@@ -52,6 +52,7 @@ import android.util.Log;
 import com.naman14.timber.R;
 import com.naman14.timber.helpers.MediaButtonIntentReceiver;
 import com.naman14.timber.helpers.MusicPlaybackTrack;
+import com.naman14.timber.helpers.Song;
 import com.naman14.timber.lastfmapi.LastFmClient;
 import com.naman14.timber.lastfmapi.models.LastfmUserSession;
 import com.naman14.timber.lastfmapi.models.ScrobbleQuery;
@@ -201,7 +202,7 @@ public class MusicService extends Service {
 
     private int mServiceStartId = -1;
 
-    List<MusicPlaybackTrack> mPlaylist = new ArrayList<MusicPlaybackTrack>(100);
+    List<MusicPlaybackTrack> mPlaylist = new ArrayList<>(100);
 
     public List<MusicPlaybackTrack> getPlaylist() {
         return mPlaylist;
@@ -751,8 +752,8 @@ public class MusicService extends Service {
         }
     }
 
-    private void addToPlayList(final long[] list, int position, long sourceId, TimberUtils.IdType sourceType) {
-        final int addlen = list.length;
+    private void addToPlayList(final List<Song> songs, int position, long sourceId, TimberUtils.IdType sourceType) {
+        final int addlen = songs.size();
         if (position < 0) {
             mPlaylist.clear();
             position = 0;
@@ -763,11 +764,11 @@ public class MusicService extends Service {
             position = mPlaylist.size();
         }
 
-        final ArrayList<MusicPlaybackTrack> arrayList = new ArrayList<MusicPlaybackTrack>(addlen);
-        for (int i = 0; i < list.length; i++) {
-            MusicPlaybackTrack playbackTrack = new MusicPlaybackTrack(list[i], sourceId, sourceType, i);
+        final ArrayList<MusicPlaybackTrack> arrayList = new ArrayList<>(addlen);
+        for (int i = 0; i < songs.size(); i++) {
+            MusicPlaybackTrack playbackTrack = new MusicPlaybackTrack(songs.get(i).title, songs.get(i).url);
             if (sourceType.equals(IdType.NA) && playbackTrack.url == null) {
-                playbackTrack.url = "content://media/external/audio/media/" + playbackTrack.mId;
+                playbackTrack.url = "content://media/external/audio/media/" + songs.get(i).id;
             }
             arrayList.add(playbackTrack);
         }
@@ -1164,7 +1165,7 @@ public class MusicService extends Service {
                         .putString(MediaMetadataCompat.METADATA_KEY_TITLE, getTrackName())
                         .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration())
                         .putLong(MediaMetadataCompat.METADATA_KEY_TRACK_NUMBER, getQueuePosition() + 1)
-                        .putLong(MediaMetadataCompat.METADATA_KEY_NUM_TRACKS, getQueue().length)
+                        .putLong(MediaMetadataCompat.METADATA_KEY_NUM_TRACKS, getQueue().size())
                         .putString(MediaMetadataCompat.METADATA_KEY_GENRE, getGenreName())
                         .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART,
                                 mShowAlbumArtOnLockscreen ? albumArt : null)
@@ -1812,12 +1813,13 @@ public class MusicService extends Service {
         return -1;
     }
 
-    public long[] getQueue() {
+    public List<Song> getQueue() {
         synchronized (this) {
             final int len = mPlaylist.size();
-            final long[] list = new long[len];
+            final List<Song> list = new ArrayList<>();
             for (int i = 0; i < len; i++) {
-                list[i] = mPlaylist.get(i).mId;
+
+                list.add(new Song(mPlaylist.get(i).title,mPlaylist.get(i).url));
             }
             return list;
         }
@@ -1863,25 +1865,25 @@ public class MusicService extends Service {
         return isPlaying() || System.currentTimeMillis() - mLastPlayedTime < IDLE_DELAY;
     }
 
-    public void open(final long[] list, final int position, long sourceId, TimberUtils.IdType sourceType) {
+    public void open(final List<Song> songs, final int position, long sourceId, TimberUtils.IdType sourceType) {
         synchronized (this) {
             if (mShuffleMode == SHUFFLE_AUTO) {
                 mShuffleMode = SHUFFLE_NORMAL;
             }
             final long oldId = getAudioId();
-            final int listlength = list.length;
+            final int listlength = songs.size();
             boolean newlist = true;
             if (mPlaylist.size() == listlength) {
                 newlist = false;
                 for (int i = 0; i < listlength; i++) {
-                    if (list[i] != mPlaylist.get(i).mId) {
+                    if (!songs.get(i).url.equals(mPlaylist.get(i).url)) { // we will check for SongID over here later
                         newlist = true;
                         break;
                     }
                 }
             }
             if (newlist) {
-                addToPlayList(list, -1, sourceId, sourceType);
+                addToPlayList(songs, -1, sourceId, sourceType);
                 notifyChange(QUEUE_CHANGED);
             }
             if (position >= 0) {
@@ -2142,15 +2144,15 @@ public class MusicService extends Service {
         }
     }
 
-    public void enqueue(final long[] list, final int action, long sourceId, IdType sourceType) {
+    public void enqueue(final List<Song> songs, final int action, long sourceId, IdType sourceType) {
         synchronized (this) {
             if (action == NEXT && mPlayPos + 1 < mPlaylist.size()) {
-                addToPlayList(list, mPlayPos + 1, sourceId, sourceType);
+                addToPlayList(songs, mPlayPos + 1, sourceId, sourceType);
                 mNextPlayPos = mPlayPos + 1;
                 notifyChange(QUEUE_CHANGED);
             }
             else {
-                addToPlayList(list, Integer.MAX_VALUE, sourceId, sourceType);
+                addToPlayList(songs, Integer.MAX_VALUE, sourceId, sourceType);
                 notifyChange(QUEUE_CHANGED);
             }
 
